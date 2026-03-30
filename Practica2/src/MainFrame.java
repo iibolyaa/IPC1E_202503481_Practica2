@@ -1,4 +1,5 @@
 import javax.swing.*;
+import java.util.Random;
 
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.category.DefaultCategoryDataset;
@@ -19,6 +20,7 @@ public class MainFrame extends JFrame{
     private JPanel RecursivoPanel;
     private JButton detenerButton;
     private JButton reiniciarButton;
+    private JComboBox comboBubble;
 
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(MainFrame.class.getName());
     private DefaultCategoryDataset dataset;
@@ -28,8 +30,9 @@ public class MainFrame extends JFrame{
     private static String  algoritmo  = "";
 
     public MainFrame() {
+
         inicializarForma();
-        iniciarAlgoritmo();
+        aceptarButton.addActionListener(e -> iniciarAlgoritmo());
     }
 
     private void inicializarForma() {
@@ -38,32 +41,49 @@ public class MainFrame extends JFrame{
         setSize(600, 400);
         setLocationRelativeTo(null);
 
+        comboBubble.addActionListener(e -> iniciarAlgoritmo());
         comboOrden.addActionListener(e -> iniciarAlgoritmo());
         comboVelocidad.addActionListener(e -> iniciarAlgoritmo());
         comboAlgoritmos.addActionListener(e -> iniciarAlgoritmo());
     }
 
     private void iniciarAlgoritmo() {
+
+        int arreglo[] = leerArreglo();
+        generarAleatorioButton.addActionListener(e -> generarAleatorio());
         seleccionarOrden();
         seleccionarVelocidad();
-        int[] arreglo = {64, 25, 12, 22, 11, 90, 45, 33};
         this.algoritmo = this.comboAlgoritmos.getSelectedItem().toString();
 
         switch (this.algoritmo) {
             case "Bubble":
-                new BubbleSortIterativo(VisualizationPanel, arreglo, this.ascendente, this.velocidad);
-                break;
-            case "Quick":
-                new QuickSort(VisualizationPanel, arreglo, this.ascendente, this.velocidad);
+                seleccionarAlgoritmo();
+                new BubbleSortIterativo(IterativoPanel, arreglo, this.ascendente, this.velocidad);
+                new BubbleSortRecursivo(RecursivoPanel, arreglo, this.ascendente, this.velocidad);
                 break;
             case "Shell":
+                ControlPanel.remove(comboBubble);
                 new ShellSort(VisualizationPanel, arreglo, this.ascendente, this.velocidad);
+                break;
+            case "Quick":
+                ControlPanel.remove(comboBubble);
+                new QuickSort(VisualizationPanel, arreglo, this.ascendente, this.velocidad);
                 break;
         }
     }
 
-    private void leerArreglo(){
+    private int[] leerArreglo(){
 
+        String text = this.ArregloCampo.getText();
+        String[] numeros = text.split(",");
+
+        int[] arreglo = new int[numeros.length];
+
+        for (int i = 0; i < numeros.length; i++) {
+            arreglo[i] = Integer.parseInt(numeros[i].trim());
+        }
+
+        return arreglo;
     }
 
     private void seleccionarVelocidad(){
@@ -101,6 +121,34 @@ public class MainFrame extends JFrame{
                 this.ascendente = true; // valor por defecto si algo falla
                 break;
         }
+    }
+
+    private void seleccionarAlgoritmo(){
+        int arreglo[] = leerArreglo();
+
+        String op = "";
+        op = this.comboBubble.getSelectedItem().toString();
+        switch(op){
+            case "Iterativo":
+                new BubbleSortIterativo(VisualizationPanel, arreglo, this.ascendente, this.velocidad);
+                break;
+            case "Recursivo":
+                new BubbleSortRecursivo(VisualizationPanel, arreglo, this.ascendente, this.velocidad);
+                break;
+        }
+    }
+
+    private int[] generarAleatorio(){
+        int n = 0;
+        int arreglo[] = new int[8];
+        Random rand = new Random();
+
+        for(int i = 0; i<8; i++){
+            n = rand.nextInt(80);
+            arreglo[i] = n;
+        }
+
+        return arreglo;
     }
 
     public static void main(String[] args){

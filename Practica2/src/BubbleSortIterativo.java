@@ -8,7 +8,7 @@ public class BubbleSortIterativo extends ChartManager {
 
     @Override
     protected String getNombre() {
-        return "Bubble Sort";
+        return "Bubble Sort Iterativo";
     }
 
     @Override

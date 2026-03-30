@@ -8,7 +8,7 @@ public class BubbleSortRecursivo extends ChartManager{
 
     @Override
     protected String getNombre() {
-        return "Bubble Sort";
+        return "Bubble Sort Recursivo";
     }
 
     @Override
@@ -21,16 +21,56 @@ public class BubbleSortRecursivo extends ChartManager{
         int temp = 0;
 
         if(n == 1){
+
+            final int[] snapFinal = arreglo.clone();
+
+            SwingUtilities.invokeLater(() -> {
+                marcarOrdenado(snapFinal, 0);
+                lblEstado.setText("Ordenamiento completado");
+            });
+
             return;
         }
 
-        for(int i = 1; i < n-1; i++){
+        for(int i = 0; i < n-1; i++){
+
+            final int id1 = i;
+            final int id2 = i + 1;
+            final int[] snap = arreglo.clone();
+
+            SwingUtilities.invokeLater(() -> {
+                actualizarDatos(snap, id1, id2);
+                lblEstado.setText("Comparando Indice " + id1 + " con Indice " + id2);
+            });
+
+            pausa();
+
             if(debeIntercambiar(arreglo[i],arreglo[i+1])){
                 temp = arreglo[i];
                 arreglo[i] = arreglo[i+1];
                 arreglo[i+1] = temp;
+
+                final int[] snap2 = arreglo.clone();
+
+                SwingUtilities.invokeLater(() -> {
+                    actualizarDatos(snap2, id1, id2);
+                    lblEstado.setText("Intercambio en Indice " + id1 + " con Indice " + id2);
+                });
+
+                pausa();
             }
+
         }
+
+        final int idOrdenado = n - 1;
+        final int[] snap3 = arreglo.clone();
+
+        SwingUtilities.invokeLater(() -> {
+            marcarOrdenado(snap3, idOrdenado);
+            lblEstado.setText("Posición con Indice " + idOrdenado + " ya ordenada");
+        });
+
+        pausa();
 
         BubbleSortRecursivo(arreglo, n-1);
     }
