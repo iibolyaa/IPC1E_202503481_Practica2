@@ -22,17 +22,21 @@ public class BubbleSortRecursivo extends ChartManager{
 
         if(n == 1){
 
-            final int[] snapFinal = arreglo.clone();
+            if(!estaDetenido()) {
+                final int[] snapFinal = arreglo.clone();
 
-            SwingUtilities.invokeLater(() -> {
-                marcarOrdenado(snapFinal, 0);
-                lblEstado.setText("Ordenamiento completado");
-            });
+                SwingUtilities.invokeLater(() -> {
+                    marcarOrdenado(snapFinal, 0);
+                    lblEstado.setText("Ordenamiento completado");
+                });
 
-            return;
+                return;
+            }
         }
 
         for(int i = 0; i < n-1; i++){
+
+            if (estaDetenido()) return;
 
             final int id1 = i;
             final int id2 = i + 1;
@@ -61,6 +65,8 @@ public class BubbleSortRecursivo extends ChartManager{
             }
 
         }
+
+        if (estaDetenido()) return;
 
         final int idOrdenado = n - 1;
         final int[] snap3 = arreglo.clone();

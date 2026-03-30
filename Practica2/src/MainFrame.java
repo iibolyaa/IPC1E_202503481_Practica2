@@ -18,8 +18,6 @@ public class MainFrame extends JFrame{
     private JPanel ComparisionPanel;
     private JPanel IterativoPanel;
     private JPanel RecursivoPanel;
-    private JButton detenerButton;
-    private JButton reiniciarButton;
     private JComboBox comboBubble;
 
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(MainFrame.class.getName());
@@ -33,6 +31,11 @@ public class MainFrame extends JFrame{
 
         inicializarForma();
         aceptarButton.addActionListener(e -> iniciarAlgoritmo());
+        generarAleatorioButton.addActionListener(e -> {
+            ArregloCampo.setText(arregloToString(generarAleatorio()));
+            iniciarAlgoritmo();
+        });
+
     }
 
     private void inicializarForma() {
@@ -50,9 +53,9 @@ public class MainFrame extends JFrame{
     private void iniciarAlgoritmo() {
 
         int arreglo[] = leerArreglo();
-        generarAleatorioButton.addActionListener(e -> generarAleatorio());
         seleccionarOrden();
         seleccionarVelocidad();
+        
         this.algoritmo = this.comboAlgoritmos.getSelectedItem().toString();
 
         switch (this.algoritmo) {
@@ -149,6 +152,15 @@ public class MainFrame extends JFrame{
         }
 
         return arreglo;
+    }
+
+    private String arregloToString(int[] arreglo){
+        StringBuilder sb = new StringBuilder();
+        for(int i = 0; i < arreglo.length; i++){
+            sb.append(arreglo[i]);
+            if(i < arreglo.length - 1) sb.append(", ");
+        }
+        return sb.toString();
     }
 
     public static void main(String[] args){

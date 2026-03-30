@@ -1,6 +1,4 @@
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
+import java.awt.*;
 import javax.swing.*;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -15,9 +13,16 @@ public abstract class ChartManager {
     protected JLabel lblEstado;
     protected JButton btnOrdenar;
     protected JPanel panel;
+    protected JButton btnDetener;
+    protected JButton btnReiniciar;
+
+
     protected int[] arreglo;
     protected int velocidad;
     protected boolean ascendente;
+
+    private Thread hilo;
+    private volatile boolean detenido = false;
 
     public ChartManager(JPanel panel, int[] arreglo, boolean ascendente, int velocidad) {
         this.panel      = panel;
@@ -28,7 +33,6 @@ public abstract class ChartManager {
     }
 
     //Creación del gráfico
-
     private void inicializarFormaData() {
         datos = new DefaultCategoryDataset();
 
@@ -56,7 +60,10 @@ public abstract class ChartManager {
 
         btnOrdenar = new JButton("Iniciar Ordenamiento");
         btnOrdenar.addActionListener(e -> {
+            reiniciar();
             btnOrdenar.setEnabled(false);
+            btnDetener.setEnabled(true);
+            btnReiniciar.setEnabled(false);
 
             if (ascendente) {
                 lblEstado.setText("Ordenando ascendente...");
@@ -67,9 +74,35 @@ public abstract class ChartManager {
             iniciarOrdenamiento(arreglo.clone());
         });
 
+        btnDetener = new JButton("Detener");
+        btnDetener.setEnabled(false);
+        btnDetener.addActionListener(e -> {
+            detener();
+            btnDetener.setEnabled(false);
+            btnReiniciar.setEnabled(true);
+            lblEstado.setText("Detenido");
+        });
+
+        btnReiniciar = new JButton("Reiniciar");
+        btnReiniciar.setEnabled(false);
+        btnReiniciar.addActionListener(e -> {
+            reiniciar();
+            actualizarDatos(arreglo.clone(), -1, -1);
+            btnOrdenar.setEnabled(true);
+            btnDetener.setEnabled(false);
+            btnReiniciar.setEnabled(false);
+            lblEstado.setText("Presiona Iniciar");
+        });
+
+        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
+        panelBotones.add(btnOrdenar);
+        panelBotones.add(btnDetener);
+        panelBotones.add(btnReiniciar);
+
+
         JPanel panelSur = new JPanel(new BorderLayout(5, 5));
         panelSur.add(lblEstado,  BorderLayout.NORTH);
-        panelSur.add(btnOrdenar, BorderLayout.SOUTH);
+        panelSur.add(panelBotones, BorderLayout.SOUTH);
 
         panel.removeAll();
         panel.setLayout(new BorderLayout());
@@ -81,16 +114,19 @@ public abstract class ChartManager {
     }
 
     private void iniciarOrdenamiento(int[] copia) {
-        Thread hilo = new Thread(() -> {
+        hilo = new Thread(() -> {
             ordenar(copia);
 
-            SwingUtilities.invokeLater(() -> {
-                actualizarDatos(copia, -1, -1);
-                btnOrdenar.setEnabled(true);
-                btnOrdenar.setText("Ordenar de nuevo");
-                lblEstado.setText("Ordenado con " + getNombre());
+            if(!estaDetenido()) {
+                SwingUtilities.invokeLater(() -> {
+                    actualizarDatos(copia, -1, -1);
+                    btnOrdenar.setEnabled(true);
+                    btnOrdenar.setText("Ordenar de nuevo");
+                    lblEstado.setText("Ordenado con " + getNombre());
                 });
+            }
         });
+
 
         hilo.setDaemon(true);
         hilo.start();
@@ -165,12 +201,28 @@ public abstract class ChartManager {
 
     protected void pausa() {
         try {
+            if (detenido) {
+                Thread.currentThread().interrupt();
+                return;
+            }
             Thread.sleep(velocidad);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
     }
 
+
+    public void detener() {
+        detenido = true;
+    }
+
+    public void reiniciar() {
+        detenido = false;
+    }
+
+    public boolean estaDetenido() {
+        return detenido;
+    }
     protected abstract String getNombre();
     protected abstract void ordenar(int[] arr);
 }

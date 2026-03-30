@@ -14,12 +14,14 @@ public class QuickSort extends ChartManager{
 
     @Override
     protected void ordenar(int[] arr) {
-        QuickSortAscendente(arr, 0, arr.length - 1);
+        QuickSort(arr, 0, arr.length - 1);
     }
 
-    private void QuickSortAscendente(int arreglo[], int low, int high) {
+    private void QuickSort(int arreglo[], int low, int high) {
         if (low < high) {
             int pi = partition(arreglo, low, high);
+
+            if (estaDetenido()) return;
 
             final int idPivote = pi;
             final int[] snap = arreglo.clone();
@@ -33,9 +35,10 @@ public class QuickSort extends ChartManager{
 
             pausa();
 
+            if (estaDetenido()) return;
 
-            QuickSortAscendente(arreglo, low, pi - 1);
-            QuickSortAscendente(arreglo, pi + 1, high);
+            QuickSort(arreglo, low, pi - 1);
+            QuickSort(arreglo, pi + 1, high);
         }
     }
 
@@ -44,6 +47,7 @@ public class QuickSort extends ChartManager{
 
         int pivote = arreglo[high];
         int i = low - 1;
+
 
         final int idPivote = high;
         final int[] snap1 = arreglo.clone();
@@ -56,6 +60,9 @@ public class QuickSort extends ChartManager{
         pausa();
 
         for (int j = low; j < high; j++) {
+
+            if (estaDetenido()) return low;
+
             if (!debeIntercambiar(arreglo[j], pivote)) {
                 i++;
 
@@ -72,21 +79,23 @@ public class QuickSort extends ChartManager{
                     lblEstado.setText("Comparando índice " + id1 + " con índice " + id2);
                 });
 
-                    pausa();
+                pausa();
             }
         }
 
+        if (estaDetenido()) return low;
 
-            final int posFinal = i + 1;
+        final int posFinal = i + 1;
 
-            final int[] snap3 = arreglo.clone();
-            SwingUtilities.invokeLater(() -> {
-                marcarPivote(snap3, high, posFinal, high);
-                lblEstado.setText("Intercambiando pivote con índice " + posFinal);
-            });
+        final int[] snap3 = arreglo.clone();
+        SwingUtilities.invokeLater(() -> {
+            marcarPivote(snap3, high, posFinal, high);
+            lblEstado.setText("Intercambiando pivote con índice " + posFinal);
+        });
 
-            pausa();
+        pausa();
 
+        if (estaDetenido()) return low;
 
         //Intercambiar el pivote
         int temp = arreglo[i + 1];
@@ -103,12 +112,13 @@ public class QuickSort extends ChartManager{
 
         pausa();
 
+        if (estaDetenido()) return low;
 
-        final int[] snapOrdenado = arreglo.clone();
+        final int[] snap = arreglo.clone();
         final int idOrdenado = posFinal;
 
         SwingUtilities.invokeLater(() -> {
-            marcarOrdenado(snapOrdenado, idOrdenado);
+            marcarOrdenado(snap, idOrdenado);
             lblEstado.setText("Índice " + idOrdenado + " ya está ordenado");
         });
 
@@ -117,38 +127,4 @@ public class QuickSort extends ChartManager{
         // Regresa la posición final del pivote
         return posFinal;
     }
-
-//    private void QuickSortDescendente(int arreglo[], int low, int high) {
-//        if (low < high) {
-//            int pi = partitionD(arreglo, low, high);
-//
-//            QuickSortDescendente(arreglo, low, pi - 1);
-//            QuickSortDescendente(arreglo, pi + 1, high);
-//        }
-//    }
-//
-//    private int partitionD(int[] arreglo, int low, int high) {
-//        int pivote = arreglo[high];
-//        int i = low - 1;
-//
-//        for (int j = low; j < high; j++) {
-//            if (arreglo[j] > pivote) {
-//                i++;
-//
-//                int temp = arreglo[i];
-//                arreglo[i] = arreglo[j];
-//                arreglo[j] = temp;
-//            }
-//        }
-//
-//        //Intercambiar el pivote
-//        int temp = arreglo[i + 1];
-//        arreglo[i + 1] = arreglo[high];
-//        arreglo[high] = temp;
-//
-//        // Regresa la posición final del pivote
-//        return i + 1;
-//    }
-
-
 }

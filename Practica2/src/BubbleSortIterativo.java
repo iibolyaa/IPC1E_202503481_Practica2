@@ -22,6 +22,8 @@ public class BubbleSortIterativo extends ChartManager {
         for (int i = 0; i < arreglo.length - 1; i++) {
             for (int j = 0; j < arreglo.length - i - 1; j++) {
 
+                if (estaDetenido()) return;
+
                 final int id1 = j;
                 final int id2 = j + 1;
                 final int[] snap = arreglo.clone();
@@ -50,6 +52,8 @@ public class BubbleSortIterativo extends ChartManager {
                 }
             }
 
+            if (estaDetenido()) return;
+
             final int idOrdenado = arreglo.length - i - 1;
             final int[] snap3 = arreglo.clone();
 
@@ -61,12 +65,14 @@ public class BubbleSortIterativo extends ChartManager {
             pausa();
         }
 
-        final int[] snapFinal = arreglo.clone();
+        if(!estaDetenido()) {
+            final int[] snapFinal = arreglo.clone();
 
-        SwingUtilities.invokeLater(() -> {
-            marcarOrdenado(snapFinal, 0);
-            lblEstado.setText("Ordenamiento completado");
-        });
+            SwingUtilities.invokeLater(() -> {
+                marcarOrdenado(snapFinal, 0);
+                lblEstado.setText("Ordenamiento completado");
+            });
+        }
     }
 
 }
